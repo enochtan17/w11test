@@ -155,4 +155,4 @@ describe('The main page', () => {
       expect(optionRegex.test(namedRow)).to.equal(true, `Could not find the is vegetarian flag "${vegFlags[optionText]}" in the same table row as "${name}".`);
     });
   });
-});
+});
