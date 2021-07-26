@@ -35,8 +35,20 @@ describe('The submission page', () => {
 
     try {
       const options = $('select[name="entreeTypeId"] option');
-      const option = $(options[Math.floor(options.length * Math.random())]);
-      optionValue = option.attr('value');
+
+      let optionIdx;
+      let tries = 0;
+      while (!optionIdx && tries < 10) {
+        const randomIdx = Math.floor(options.length * Math.random());
+        const option = $(options[randomIdx]);
+        const val = option.attr('value');
+        const disabled = option.attr('disabled');
+        if (disabled || val) {
+          optionValue = val;
+          optionIdx = randomIdx;
+        }
+        tries++;
+      }
 
       if (!optionValue) {
         optionError = new Error('Could not find a select dropdown with entreeTypeIds to use to submit.');
@@ -149,15 +161,10 @@ describe('The submission page', () => {
 
   it('returns a 403 for a missing CSRF token', done => {
     if (!app) { return done(Error('Cannot read "app" from app.js')); }
-    if (csrfError || optionError) { return done(csrfError || optionError); }
+    if (csrfError) { return done(csrfError); }
 
     request(app)
       .post(formHandlerPath)
-      .set('Cookie', cookies)
-      .send(`name=${encodeURIComponent(faker.name.findName() + ' Special')}`)
-      .send(`description=${encodeURIComponent(faker.commerce.productAdjective() + ' meal at a great price')}`)
-      .send(`price=${faker.finance.amount(1, 9000, 2)}`)
-      .send(`entreeTypeId=${optionValue}`)
       .expect(403, done);
   });
 });

@@ -71,9 +71,22 @@ describe('The main page', () => {
 
     try {
       const options = $('select[name="entreeTypeId"] option');
-      const option = $(options[Math.floor(options.length * Math.random())]);
-      optionValue = option.attr('value');
-      optionText = option.text();
+
+      let optionIdx;
+      let tries = 0;
+      while (!optionIdx && tries < 10) {
+        const randomIdx = Math.floor(options.length * Math.random());
+        const option = $(options[randomIdx]);
+        const val = option.attr('value');
+        const disabled = option.attr('disabled');
+        if (disabled || val) {
+          optionValue = val;
+          optionText = option.text();
+          optionIdx = randomIdx;
+        }
+        tries++;
+      }
+
     } catch (e) {
       optionError = new Error('Could not find a select dropdown with entreeTypeIds to use to submit.');
       return;
