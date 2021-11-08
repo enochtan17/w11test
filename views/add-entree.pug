@@ -1,0 +1,21 @@
+extends layout.pug
+
+block content
+    form(action='/entrees' method='post')
+        input(type='hidden' name='_csrf' value=csrfToken)
+        div
+            label(for='name') Entree Name:
+            input(type='text' name='name' required)
+        div
+            label(for='description') Entree Description:
+            textarea(type='textarea' name='description')
+        div
+            label(for='price') Price:
+            input(type='number' name='price' required)
+        div
+            label(for='entreeTypeId') Entree Type:
+            select(name='entreeTypeId' required)
+                each entreeType in entreeTypes
+                    option(value=entreeType.id selected=(entreeType.id === entree.entreeTypeId))= entreeType.name
+        div
+            button Submit New Entree
